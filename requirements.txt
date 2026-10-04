@@ -1,0 +1,31 @@
+# AquaCast-Punjab — AI-Powered Aquifer Depletion & Irrigation Advisory System
+# Python 3.11+ (developed on 3.13).  CPU-only torch is enough — the model has 52k params.
+
+# ---- core numerics -------------------------------------------------------------------
+numpy>=1.24,<3
+pandas>=2.0
+scipy>=1.10
+
+# ---- deep learning -------------------------------------------------------------------
+torch>=2.1          # CPU wheel: pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# ---- geospatial ----------------------------------------------------------------------
+geopandas>=0.14
+shapely>=2.0
+pyproj>=3.5
+pyogrio>=0.7
+rasterio>=1.3
+folium>=0.15
+streamlit-folium>=0.20
+
+# ---- machine learning / metrics --------------------------------------------------------
+scikit-learn>=1.3
+
+# ---- app -----------------------------------------------------------------------------
+streamlit>=1.30
+plotly>=5.18
+
+# ---- io ------------------------------------------------------------------------------
+openpyxl>=3.1       # India-WRIS .xlsx telemetry
+xlsxwriter>=3.1     # exports
+gdown>=5.1          # optional: re-pull the Drive dataset
