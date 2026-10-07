@@ -1,0 +1,27 @@
+{
+"type": "FeatureCollection",
+"name": "District Headquarter",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.42", "OBJECTID": 42, "District": "Kapurthala", "State": "PB", "DHQ": "Kapurthala (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.38092791, 31.38183749 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.245", "OBJECTID": 245, "District": "Sangrur", "State": "PB", "DHQ": "Sangrur (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.8412896, 30.24439091 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.249", "OBJECTID": 249, "District": "Patiala", "State": "PB", "DHQ": "Patiala (M Corp.)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 76.39544902, 30.33582018 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.250", "OBJECTID": 250, "District": "Sirhind Fatehgarh Sahib", "State": "PB", "DHQ": "Sirhind Fatehgarh Sahib (M Cl)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 76.38529128, 30.64339327 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.253", "OBJECTID": 253, "District": "S.A.S.Nagar", "State": "PB", "DHQ": "S.A.S.Nagar (Mohali ) (M Cl)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 76.71124294, 30.69413316 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.440", "OBJECTID": 440, "District": "Gurdaspur", "State": "PB", "DHQ": "Gurdaspur (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.40332832, 32.03954322 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.441", "OBJECTID": 441, "District": "Amritsar", "State": "PB", "DHQ": "Amritsar (M Corp.)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 74.87349611, 31.61904754 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.442", "OBJECTID": 442, "District": "Tarn Taran", "State": "PB", "DHQ": "Tarn Taran (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 74.92842996, 31.45415032 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.475", "OBJECTID": 475, "District": "Firozpur", "State": "PB", "DHQ": "Firozpur (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 74.60971002, 30.95940731 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.476", "OBJECTID": 476, "District": "Faridkot", "State": "PB", "DHQ": "Faridkot (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 74.75759688, 30.67315073 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.477", "OBJECTID": 477, "District": "Muktsar", "State": "PB", "DHQ": "Muktsar (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 74.51454626, 30.4762093 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.478", "OBJECTID": 478, "District": "Bathinda", "State": "PB", "DHQ": "Bathinda (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 74.94174073, 30.20883602 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.479", "OBJECTID": 479, "District": "Hoshiarpur", "State": "PB", "DHQ": "Hoshiarpur (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.91342824, 31.53077277 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.480", "OBJECTID": 480, "District": "Jalandhar", "State": "PB", "DHQ": "Jalandhar (M Corp.)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.57847315, 31.33542483 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.481", "OBJECTID": 481, "District": "Ludhiana", "State": "PB", "DHQ": "Ludhiana (M Corp.)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.85602645, 30.91168811 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.482", "OBJECTID": 482, "District": "Moga", "State": "PB", "DHQ": "Moga (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.17392305, 30.8142389 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.483", "OBJECTID": 483, "District": "Barnala", "State": "PB", "DHQ": "Barnala (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.54768715, 30.37476609 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.484", "OBJECTID": 484, "District": "Mansa", "State": "PB", "DHQ": "Mansa (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 75.40252765, 29.99412167 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.486", "OBJECTID": 486, "District": "Nawashahr", "State": "PB", "DHQ": "Nawashahr (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 76.11537632, 31.12539148 ] } },
+{ "type": "Feature", "properties": { "GmlID": "DISTRICTHQ.487", "OBJECTID": 487, "District": "Rupnagar", "State": "PB", "DHQ": "Rupnagar (M CI)", "Type": "DHQ" }, "geometry": { "type": "Point", "coordinates": [ 76.5251681, 30.96427408 ] } }
+]
+}

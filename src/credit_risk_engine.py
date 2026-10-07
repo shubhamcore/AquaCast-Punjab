@@ -104,8 +104,11 @@ def _clip(x, lo=0.0, hi=100.0) -> float:
 
 
 def _band(score: float):
+    # NB: bands must cover the whole [0, 100] continuum — comparing with
+    # ``lo <= score <= hi`` on rounded bounds left a float gap (e.g. 35.6 fell
+    # between 35 and 36) that fell through to the worst band.
     for lo, hi, key, label, col in BANDS:
-        if lo <= score <= hi:
+        if score <= hi:
             return key, label, col
     return BANDS[-1][2], BANDS[-1][3], BANDS[-1][4]
 

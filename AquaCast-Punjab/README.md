@@ -10,34 +10,6 @@
 
 ---
 
-## 0. Executive summary
-
-Punjab extracts **more groundwater than the state receives in recharge** — a stage
-of groundwater extraction of **163.76 %** in the 2023 CGWB assessment (reported in
-the Rajya Sabha, December 2024: 27.8 bcm extracted against 16.98 bcm extractable
-[1](https://www.tribuneindia.com/news/haryana/groundwater-extraction-stage-reaches-136-in-haryana-164-in-punjab/)),
-easing to **152.22 %** in the 2026 assessment [2](https://theprint.in/india/cgwb-report-shows-decline-in-extraction-better-groundwater-levels-punjab-minister/3030157/).
-**111 of 153 assessment blocks remain over-exploited** [3](https://www.royalpatiala.in/drain-strain-punjabs-111-blocks-overexploited-second-highest-in-india/).
-
-That number is known. What is missing is the last mile: nobody tells the farmer
-*which hours to pump this week*, and nobody tells the lender *which loan is about
-to go dry*.
-
-AquaCast closes that gap. It forecasts the water table **30 / 60 / 90 days ahead**
-with a PyTorch LSTM (Sangrur out-of-sample **RMSE 0.117 m, R² 0.935, +67.4 % skill
-over persistence**), and converts the forecast into three artefacts:
-
-| For | Artefact | Ends in |
-|---|---|---|
-| **The kisan** | A 375 px bilingual card: one dial, one instruction | *"Run the pump 6 h today, 22:00–04:00"* |
-| **The farmer** | Water budget, neighbour-interference calculator, rotation simulator, drilling finance | *Shift 2 000 ha out of paddy → save 6.8 MCM* |
-| **Satin Finserv** | Block stress heatmap, portfolio at risk, deepening-vs-drip capex | *Drip on grid: 3.7 yr payback. Solar: never pays.* |
-
-**The one-line pitch:** every other team will show you a groundwater chart. We show
-a farmer which hours to pump, and a bank which loan is about to go dry.
-
----
-
 ## 1. What makes this different
 
 Most hackathon prototypes generate a fake CSV, fit a model, and stop. AquaCast is
@@ -116,66 +88,13 @@ October→December climatology has done in every year of the record.
 
 ## 3. Architecture
 
-```mermaid
-flowchart TB
-    subgraph SPATIAL["SPATIAL INPUTS — real vectors & rasters (data/)"]
-        direction LR
-        S1["District Boundary<br/>District Headquarter"]
-        S2["Groundwater Level Station<br/>Groundwater Station<br/>WIMS Station"]
-        S3["Rainfall Station<br/>Litholog (305 bore logs)"]
-        S4["Rasters 384 m<br/>aquifer thickness · depth to<br/>first aquifer · soil texture<br/>· Rabi wheat mask"]
-    end
-
-    subgraph TEMPORAL["HYDRO-TEMPORAL ENGINE"]
-        direction TB
-        T1["telemetry_ingest.py<br/>WRIS parser + QC + provenance"]
-        T2["dataset_generator.py<br/>FAO-56 water balance<br/>ΔS = Recharge(R, infiltration)<br/>− Discharge(pumping, baseflow)<br/>gamma recharge lag kernel"]
-        T3["model_lstm.py<br/>PyTorch LSTM 60 d × 8 ch<br/>MC-dropout → 30/60/90 d"]
-        T1 --> T2 --> T3
-    end
-
-    subgraph STRATA["STRATIFIED & CROP MODEL"]
-        direction TB
-        C1["crop_cycle_model.py (B)<br/>Rabi wheat → Zaid → Kharif paddy<br/>Draft = Σ A×Depth (MCM)"]
-        C2["aquifer_strata.py (C)<br/>L1 0–40 · L2 40–90 · L3 &gt;90 m<br/>₹/ft to deepen"]
-        C3["spatial_network.py (A)<br/>Cooper–Jacob / Theis<br/>N×N station influence matrix"]
-        C1 --- C2 --- C3
-    end
-
-    subgraph OUT["TRIPLE DASHBOARD (Module E)"]
-        direction LR
-        V1["📱 Kisan Mobile<br/>375 px · ਪੰਜਾਬੀ/English<br/>dial + WhatsApp push"]
-        V2["🧑‍🌾 Farmer Desktop<br/>water budget · interference<br/>rotation · drilling ₹"]
-        V3["🏛️ Admin & Satin Finserv<br/>network map · block heatmap<br/>PAR ₹ Cr · power optimiser"]
-    end
-
-    SPATIAL --> TEMPORAL
-    SPATIAL --> STRATA
-    TEMPORAL --> C1
-    TEMPORAL --> C3
-    STRATA --> OUT
-
-    R1["credit_risk_engine.py (D)<br/>0–100 = w₁·Drawdown + w₂·Stage + w₃·Capex<br/>KCC bands · drip vs deepening NPV"] --> V3
-    R2["benchmarks.py (F)<br/>vs GRACE · India-WRIS · PAU"] --> V3
-    T3 --> R1
-
-    style SPATIAL fill:#0d3b66,stroke:#0EA5E9,color:#E6F4FF
-    style TEMPORAL fill:#123a2a,stroke:#22C55E,color:#E6F4FF
-    style STRATA fill:#3a2a12,stroke:#F59E0B,color:#FDE9C8
-    style OUT fill:#2a1230,stroke:#8B5CF6,color:#EDE4FF
-    style R1 fill:#3a1212,stroke:#EF4444,color:#FFE4E4
-    style R2 fill:#12283a,stroke:#38BDF8,color:#E4F4FF
-```
-
-The same pipeline, written as the module map it is compiled from:
-
 ```
 run_pipeline.py
 │
 ├─[0] pre-flight ............ verify / rebuild the Punjab spatial clips
 │
 ├─[1] src/spatial_loader.py ............. MODULE 1  spatial ingestion + crop baseline
-│     22 Punjab districts · 122 Sangrur wells · 8 raster covariates (384 m)
+│     22 Punjab districts · 122 Sangrur wells · 8 raster covariates
 │     calibrated priors: 280 000 ha wheat · 350 mm · 980 MCM · Sy = 0.12
 │
 ├─[2] src/telemetry_ingest.py ........... MODULE 2a real telemetry ingestion + QC
@@ -193,22 +112,11 @@ run_pipeline.py
 │     MC-dropout uncertainty · permutation importance · input saliency
 │     → models/lstm_aquifer.pth
 │
-├─[5] src/crop_cycle_model.py ........... MODULE B  full-year rotation
-│     Rabi wheat (Kc 1.15) → Zaid → Kharif paddy (Kc 1.20, ponded)
-│     Draft = Σ A_crop × Depth_crop · calibrated to PADDY_GW_DRAFT_MM
+├─[5] src/advisory_engine.py + src/risk_engine.py + src/i18n.py .. MODULE 4
+│     aquifer zone · pumping quota · pump-failure risk · 1-100 credit score
+│     bilingual (English / ਪੰਜਾਬੀ) WhatsApp + SMS templates
 │
-├─[6] src/aquifer_strata.py ............. MODULE C  three-tier strata + ₹/ft
-│     L1 shallow · L2 semi-confined · L3 deep · T, S, EC from real Lithologs
-│
-├─[7] src/spatial_network.py ............ MODULE A  tubewell interference
-│     Cooper–Jacob/Theis · village clusters · N×N station influence matrix
-│
-├─[8] src/credit_risk_engine.py ......... MODULE D  0–100 underwriting score
-│     w₁·Drawdown + w₂·CriticalStage + w₃·CapexRatio · drip vs deepening NPV
-│
-├─[9] src/benchmarks.py ................. MODULE F  GRACE · India-WRIS · PAU
-│
-└─[10] app.py + src/personas.py ......... MODULE E  triple dashboard (3 roles)
+└─[6] app.py ............................ MODULE 5  Streamlit dashboard (4 tabs)
 ```
 
 ---
@@ -280,7 +188,7 @@ python run_pipeline.py                   # pipeline → metrics → streamlit
 python run_pipeline.py --no-app          # pipeline only
 python run_pipeline.py --retrain --epochs 60
 python run_pipeline.py --force-data      # rebuild the hybrid time-series
-python tests/smoke_test.py               # 25 headless checks (~30 s)
+python tests/smoke_test.py               # 24 headless checks (~30 s)
 streamlit run app.py                     # dashboard only
 
 # rebuild the pitch deck from live artefacts (figures → facts → .pptx)
@@ -320,53 +228,14 @@ The trained weights and generated datasets are already committed, so
   Punjab to keep the repository at ~26 MB. Re-download them from the portal (or the
   team Drive folder) and run `python scripts/build_spatial_assets.py` to rebuild.
 
-### 7.1 Data pedigree — what is real, what is modelled, what is a scenario knob
-
-Every quantity in the system is one of four kinds. We label them everywhere they
-appear, because a number that looks authoritative and is not is worse than no number.
-
-| Kind | Meaning | Where it appears |
-|---|---|---|
-| 🟢 **Measured** | Comes from a shipped dataset, unmodified | Rainfall, temperature, 31 CGWB water-level readings, 122 well locations, 305 lithologs (T, S, EC), district polygons, all 8 rasters |
-| 🔵 **Derived** | Computed from measured inputs by a stated formula | ET₀ (Hargreaves), recharge (gamma-lag routing), aquifer T = K·b, local bore density = `prior.tubewells / net sown km²`, GRACE cell area, ₹/ft deepening cost |
-| 🟡 **Reconstructed** | Physics model calibrated against the measured points | The daily water-level trajectory. Only 31 real labels exist; the shape is validated against them and the LSTM trains on the reconstruction. Disclosed on the Model Lab tab. |
-| 🟠 **Scenario knob** | An assumption the user can dial, never presented as fact | Zaid (summer) crop area share, credit-score weights, the saline-depth uplift |
-
-**Modelled-but-labelled:** the synthetic village tubewell network in Module A. Bore
-*positions* are synthetic (seeded rejection sampling inside the real district polygon,
-kept on the real Rabi wheat mask, with cluster centres weighted toward the real
-monitoring stations because CGWB sites piezometers where the pumps are). Every
-property assigned to them — transmissivity, storativity, pumping rate — is derived
-from real rasters and priors. The network is reported as a **0.7–0.8 % sample** of the
-district's real tubewell count, so its interference figures are a lower bound.
-
-### 7.2 Three places where the data contradicted the brief
-
-We built what we were asked to build, and then reported what the data actually said.
-
-1. **"Monsoon flooding depletes the aquifer before November wheat sowing."** It does
-   not. The detrended seasonal cycle has its **deepest point in July** and its
-   shallowest in **December**. The monsoon *refills* the aquifer; it is the Rabi wheat
-   season that drains it into the summer trough. The honest version is stronger: the
-   monsoon refills but does not restore — each November starts ~0.65 m deeper than the
-   last. (`crop_cycle_model.seasonal_trough`)
-2. **"Deeper water is saline."** Not in this dataset. EC correlates with drilled depth
-   at **r = +0.02** across 96 real lithologs. 7 % of logs exceed 2 000 µS/cm, but they
-   are not concentrated in deep bores. Deep salinity is flagged as a literature risk
-   and labelled as such, never as a finding. (`aquifer_strata.salinity_risk`)
-3. **10 m Sentinel-2 hyper-local resolution.** Our shipped rasters are **384 m**, not
-   10 m. That is still a 269× linear improvement on a 1° GRACE cell, but we report the
-   resolution we actually hold. (`benchmarks.our_raster_cell_m`)
-
 ---
 
 ## 8. Repository map
 
 ```
-├── app.py                         Streamlit dashboard · role switcher → 3 views
+├── app.py                         Streamlit dashboard (4 tabs)
 ├── run_pipeline.py               single entrypoint
 ├── requirements.txt
-├── scripts/setup_env.sh          repeatable installer (torch CPU wheel via TMPDIR)
 ├── src/
 │   ├── config.py                 paths, district priors, hyper-parameters, scenarios
 │   ├── spatial_loader.py         MODULE 1  spatial ingestion & crop baseline
@@ -377,12 +246,6 @@ We built what we were asked to build, and then reported what the data actually s
 │   ├── risk_engine.py            micro-finance risk (1-100) → PD → expected loss
 │   ├── digital_twin.py           what-if simulator
 │   ├── well_network.py           district → 122 wells downscaling
-│   ├── crop_cycle_model.py       MODULE B  full-year rotation (Rabi/Zaid/Kharif)
-│   ├── aquifer_strata.py         MODULE C  3-tier strata, ₹/ft, cross-section
-│   ├── spatial_network.py        MODULE A  Cooper–Jacob interference network
-│   ├── credit_risk_engine.py     MODULE D  0-100 KCC score, drip vs deepening
-│   ├── benchmarks.py             MODULE F  vs GRACE / India-WRIS / PAU
-│   ├── personas.py               MODULE E  kisan / farmer / admin views
 │   ├── i18n.py                   English / ਪੰਜਾਬੀ (Gurmukhi) copy
 │   └── viz.py                    every Plotly figure
 ├── scripts/
@@ -390,7 +253,7 @@ We built what we were asked to build, and then reported what the data actually s
 │   ├── make_figures.py           13 deck charts, drawn from live data
 │   ├── deck_facts.py             every number the deck quotes, computed
 │   └── build_deck.py             21-slide .pptx assembled from the two above
-├── tests/smoke_test.py           25 assertions, incl. regressions for both audit fixes
+├── tests/smoke_test.py           24 assertions, incl. regressions for both audit fixes
 ├── reports/
 │   ├── AquaCast-Punjab.pptx      the pitch deck
 │   ├── deck_facts.json           the numbers, as data
@@ -398,7 +261,7 @@ We built what we were asked to build, and then reported what the data actually s
 ├── data/                         26 MB of Punjab-clipped WRIS/CGWB assets
 │   ├── raw_telemetry/            the original portal exports
 │   ├── processed/                generated daily time-series + fitted climate model
-│   └── rasters/                  8 reprojected Punjab rasters (384 m)
+│   └── rasters/                  8 reprojected Punjab rasters
 └── models/lstm_aquifer.pth       trained weights (+ .json model card)
 ```
 

@@ -18,39 +18,28 @@ from plotly.subplots import make_subplots
 from .config import BRAND, HORIZONS, ZONE_CRITICAL_MAX, ZONE_SAFE_MAX
 
 C = BRAND
-GRID = "#E2E8F0"
+GRID = "rgba(148,163,184,0.14)"
 FONT = dict(family="Inter, Segoe UI, system-ui, sans-serif", size=12,
-            color="#475569")
-
-#: ParentSquare-style layout contract — every figure in the app uses these
-#: explicit margins and the responsive 420 px height so titles, legend rows
-#: and axis labels are never clipped or made to collide with side panels.
-MARGIN = dict(l=40, r=20, t=50, b=40)
-FIG_HEIGHT = 420
+            color="#CBD5E1")
 
 
-def _layout(fig, title: str | None = None, height: int = FIG_HEIGHT,
+def _layout(fig, title: str | None = None, height: int = 380,
             legend_top: bool = True, **kw):
     fig.update_layout(
-        template="plotly_white",
+        template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#FFFFFF",
+        plot_bgcolor="rgba(14,22,33,0.55)",
         font=FONT,
         height=height,
-        margin=dict(MARGIN),
-        title=dict(text=title or "", font=dict(size=14, color="#0F172A"),
-                   x=0.0, xanchor="left", y=0.966, yanchor="bottom"),
-        hoverlabel=dict(bgcolor="#FFFFFF", bordercolor=C["primary"],
-                        font=dict(color="#0F172A")),
-        legend=dict(orientation="h", y=1.0, yanchor="bottom", x=1, xanchor="right",
-                    bgcolor="rgba(0,0,0,0)", font=dict(size=10, color="#334155"),
-                    tracegroupgap=6)
-        if legend_top else dict(bgcolor="rgba(0,0,0,0)"),
+        margin=dict(l=52, r=20, t=48 if title else 24, b=44),
+        title=dict(text=title or "", font=dict(size=14, color="#E2E8F0"), x=0.01),
+        hoverlabel=dict(bgcolor="#0B1622", bordercolor=C["primary"],
+                        font=dict(color="#E2E8F0")),
+        legend=dict(orientation="h", y=1.12, x=0, bgcolor="rgba(0,0,0,0)",
+                    font=dict(size=11)) if legend_top else dict(bgcolor="rgba(0,0,0,0)"),
         **kw)
-    fig.update_xaxes(gridcolor=GRID, zeroline=False, linecolor=GRID,
-                     tickfont=dict(color="#475569"), title_font=dict(color="#334155"))
-    fig.update_yaxes(gridcolor=GRID, zeroline=False, linecolor=GRID,
-                     tickfont=dict(color="#475569"), title_font=dict(color="#334155"))
+    fig.update_xaxes(gridcolor=GRID, zeroline=False, linecolor=GRID)
+    fig.update_yaxes(gridcolor=GRID, zeroline=False, linecolor=GRID)
     return fig
 
 
@@ -58,15 +47,15 @@ def zone_bands(fig, y_lo: float, y_hi: float):
     """Shade the Safe / Critical / Over-Exploited depth bands."""
     lo = min(y_lo, ZONE_SAFE_MAX - 1)
     hi = max(y_hi, ZONE_CRITICAL_MAX + 2)
-    fig.add_hrect(y0=lo, y1=ZONE_SAFE_MAX, fillcolor="#16A34A", opacity=0.07,
+    fig.add_hrect(y0=lo, y1=ZONE_SAFE_MAX, fillcolor="#22C55E", opacity=0.09,
                   line_width=0, annotation_text="Safe", annotation_position="top left",
-                  annotation=dict(font_size=10, font_color="#15803D"))
-    fig.add_hrect(y0=ZONE_SAFE_MAX, y1=ZONE_CRITICAL_MAX, fillcolor="#F59E0B", opacity=0.08,
+                  annotation=dict(font_size=10, font_color="#4ADE80"))
+    fig.add_hrect(y0=ZONE_SAFE_MAX, y1=ZONE_CRITICAL_MAX, fillcolor="#F59E0B", opacity=0.09,
                   line_width=0, annotation_text="Critical", annotation_position="top left",
-                  annotation=dict(font_size=10, font_color="#B45309"))
-    fig.add_hrect(y0=ZONE_CRITICAL_MAX, y1=hi, fillcolor="#DC2626", opacity=0.06,
+                  annotation=dict(font_size=10, font_color="#FBBF24"))
+    fig.add_hrect(y0=ZONE_CRITICAL_MAX, y1=hi, fillcolor="#EF4444", opacity=0.09,
                   line_width=0, annotation_text="Over-exploited", annotation_position="top left",
-                  annotation=dict(font_size=10, font_color="#B91C1C"))
+                  annotation=dict(font_size=10, font_color="#F87171"))
     return fig
 
 
@@ -86,23 +75,23 @@ def forecast_chart(df: pd.DataFrame, hist_tail: int = 420, issue_date=None,
     y_hi = float(d.gw_level_mbgl.max()) + 0.8
 
     fig.add_trace(go.Scatter(x=d.date, y=d.gw_level_mbgl, mode="lines",
-                             name="Water table",
+                             name="Reconstructed water table",
                              line=dict(color=C["primary"], width=2.0),
                              hovertemplate="%{x|%d %b %Y}<br>%{y:.2f} m bgl<extra></extra>"))
     # provenance shading: where the inputs are measured vs modelled
     meas = d[d.rainfall_src == "telemetry"]
     if len(meas):
         fig.add_trace(go.Scatter(x=meas.date, y=[d.gw_level_mbgl.min() - 0.35] * len(meas),
-                                 mode="markers", name="Rainfall",
-                                 marker=dict(size=4, color="#0891B2", symbol="line-ns-open",
-                                             line=dict(width=1.4, color="#0891B2")),
+                                 mode="markers", name="Real rainfall telemetry",
+                                 marker=dict(size=3, color="#22D3EE", symbol="line-ns-open",
+                                             line=dict(width=1, color="#22D3EE")),
                                  hovertemplate="measured<extra></extra>"))
 
     if observed is not None and len(observed):
         fig.add_trace(go.Scatter(x=observed.date, y=observed.gw_level_mbgl, mode="markers",
-                                 name="CGWB",
-                                 marker=dict(size=9, color="#F59E0B", symbol="diamond",
-                                             line=dict(width=1.2, color="#0F172A")),
+                                 name="CGWB in-situ measurement",
+                                 marker=dict(size=9, color="#FDE047", symbol="diamond",
+                                             line=dict(width=1, color="#0F172A")),
                                  hovertemplate="<b>CGWB</b><br>%{x|%d %b %Y}<br>%{y:.2f} m bgl<extra></extra>"))
 
     if fc_dates is not None and fc_mean is not None:
@@ -117,8 +106,8 @@ def forecast_chart(df: pd.DataFrame, hist_tail: int = 420, issue_date=None,
         fig.add_trace(go.Scatter(x=list(xs) + list(xs)[::-1], y=list(up) + list(dn)[::-1],
                                  fill="toself", fillcolor="rgba(139,92,246,0.20)",
                                  line=dict(width=0), hoverinfo="skip",
-                                 name="95% CI"))
-        fig.add_trace(go.Scatter(x=xs, y=ms, mode="lines+markers", name="LSTM forecast",
+                                 name="95 % confidence (MC-dropout)"))
+        fig.add_trace(go.Scatter(x=xs, y=ms, mode="lines+markers", name="AquaCast LSTM forecast",
                                  line=dict(color=C["violet"], width=2.6, dash="dot"),
                                  marker=dict(size=9, color=C["violet"],
                                              line=dict(width=1.5, color="#0F172A")),
@@ -128,12 +117,12 @@ def forecast_chart(df: pd.DataFrame, hist_tail: int = 420, issue_date=None,
     fig.add_vline(x=pd.Timestamp(issue_date) if issue_date is not None else d.date.iloc[-1],
                   line=dict(color="#94A3B8", width=1, dash="dash"))
     fig.add_annotation(x=pd.Timestamp(issue_date) if issue_date is not None else d.date.iloc[-1],
-                       y=1.005, yref="paper", text="today", showarrow=False,
-                       yanchor="bottom", font=dict(size=10, color="#64748B"))
+                       y=1.02, yref="paper", text="today", showarrow=False,
+                       font=dict(size=10, color="#94A3B8"))
     zone_bands(fig, y_lo, y_hi)
     fig.update_yaxes(title_text="Depth to water table (m bgl)", autorange="reversed")
     fig.update_xaxes(title_text="")
-    return _layout(fig, title)
+    return _layout(fig, title, height=430)
 
 
 # ======================================================================================
@@ -148,14 +137,14 @@ def water_budget_chart(annual: pd.DataFrame) -> go.Figure:
     fig.add_trace(go.Bar(x=x, y=annual["recharge_mcm"], name="Natural + return recharge",
                          marker_color=C["primary"], opacity=0.9,
                          hovertemplate="Recharge %{y:,.0f} MCM<extra></extra>"), secondary_y=False)
-    fig.add_trace(go.Scatter(            x=x, y=annual["deficit_mcm"], name="Deficit",
-                             mode="lines+markers", line=dict(color="#B45309", width=2.4),
+    fig.add_trace(go.Scatter(x=x, y=annual["deficit_mcm"], name="Deficit",
+                             mode="lines+markers", line=dict(color="#FDE047", width=2.4),
                              hovertemplate="Deficit %{y:,.0f} MCM<extra></extra>"),
                   secondary_y=True)
     fig.update_yaxes(title_text="Volume (MCM)", secondary_y=False)
     fig.update_yaxes(title_text="Deficit (MCM)", secondary_y=True, showgrid=False)
     fig.update_layout(barmode="group", bargap=0.28)
-    return _layout(fig, "Annual extraction vs recharge (district water budget)")
+    return _layout(fig, "Annual extraction vs recharge (district water budget)", height=330)
 
 
 def seasonal_profile(df: pd.DataFrame) -> go.Figure:
@@ -169,13 +158,14 @@ def seasonal_profile(df: pd.DataFrame) -> go.Figure:
     fig.add_trace(go.Bar(x=m.index, y=m.recharge, name="Mean daily recharge (MCM)",
                          marker_color="#38BDF8", opacity=.85))
     fig.add_trace(go.Scatter(x=m.index, y=m.level, name="Mean water table (m bgl)",
-                             line=dict(color="#1D4ED8", width=2.6)), secondary_y=True)
+                             line=dict(color="#FDE047", width=2.6)), secondary_y=True)
     fig.update_xaxes(tickmode="array",
                      tickvals=list(range(1, 13)),
                      ticktext=["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"])
     fig.update_yaxes(title_text="MCM / day", secondary_y=False)
     fig.update_yaxes(title_text="m bgl", secondary_y=True, autorange="reversed", showgrid=False)
-    return _layout(fig, "Seasonal rhythm: Rabi drawdown → Kharif paddy → monsoon recovery")
+    return _layout(fig, "Seasonal rhythm: Rabi drawdown → Kharif paddy → monsoon recovery",
+                   height=330)
 
 
 # ======================================================================================
@@ -190,7 +180,7 @@ def validation_chart(test_df: pd.DataFrame, issue, y_true, y_pred, horizon: int,
     fig.add_trace(go.Scatter(x=x, y=y_pred[:, j], mode="lines", name=f"LSTM t+{horizon}",
                              line=dict(color=C["violet"], width=1.9, dash="dot")))
     fig.update_yaxes(title_text="Water table (m bgl)", autorange="reversed")
-    return _layout(fig, f"Test-set validation — {horizon}-day horizon")
+    return _layout(fig, f"Test-set validation — {horizon}-day horizon", height=300)
 
 
 def scatter_skill(y_true, y_pred, horizon: int) -> go.Figure:
@@ -202,10 +192,10 @@ def scatter_skill(y_true, y_pred, horizon: int) -> go.Figure:
                                          line=dict(width=0)),
                              name="forecast"))
     fig.add_trace(go.Scatter(x=[lo, hi], y=[lo, hi], mode="lines",
-                             line=dict(color="#94A3B8", width=1.4, dash="dash"), name="1:1"))
+                             line=dict(color="#FDE047", width=1.4, dash="dash"), name="1:1"))
     fig.update_xaxes(title_text="Actual (m bgl)")
     fig.update_yaxes(title_text="Predicted (m bgl)")
-    return _layout(fig, f"Predicted vs actual — t+{horizon}")
+    return _layout(fig, f"Predicted vs actual — t+{horizon}", height=300)
 
 
 def history_chart(history: list[dict]) -> go.Figure:
@@ -217,7 +207,7 @@ def history_chart(history: list[dict]) -> go.Figure:
                              line=dict(color=C["accent"], width=2)))
     fig.update_xaxes(title_text="Epoch")
     fig.update_yaxes(title_text="RMSE (m)")
-    return _layout(fig, "Training curve — loss convergence")
+    return _layout(fig, "Training curve", height=280)
 
 
 def importance_chart(imp: pd.DataFrame) -> go.Figure:
@@ -228,50 +218,44 @@ def importance_chart(imp: pd.DataFrame) -> go.Figure:
                            error_x=dict(type="data", array=d["std"], color="#94A3B8"),
                            hovertemplate="%{y}: +%{x:.3f} m RMSE when shuffled<extra></extra>"))
     fig.update_xaxes(title_text="Increase in test RMSE when the channel is shuffled (m)")
-    return _layout(fig, "Permutation feature importance")
+    return _layout(fig, "Permutation feature importance", height=330)
 
 
 def saliency_chart(sal: pd.DataFrame, horizon: str = "t+90") -> go.Figure:
     d = sal[sal.horizon == horizon]
     feats = [c for c in d.columns if c not in ("horizon", "day_offset")]
-    short = {"gw_level_mbgl": "GW level", "rainfall_mm": "Rain",
-             "temp_max_c": "Temp", "crop_water_demand_mcm": "Demand",
-             "rolling_7d_rainfall": "Roll 7d rain", "rolling_30d_temp": "Roll 30d temp",
-             "doy_sin": "doy sin", "doy_cos": "doy cos"}
     fig = go.Figure()
     for f in feats:
-        fig.add_trace(go.Scatter(x=d.day_offset, y=d[f], mode="lines",
-                                 name=short.get(f, f),
+        fig.add_trace(go.Scatter(x=d.day_offset, y=d[f], mode="lines", name=f,
                                  stackgroup="one", line=dict(width=.6)))
     fig.update_xaxes(title_text="Days before the issue date")
     fig.update_yaxes(title_text="|∂ forecast / ∂ input| (share)")
-    return _layout(fig, f"Which days drove the {horizon} forecast")
+    return _layout(fig, f"Which days drove the {horizon} forecast", height=300)
 
 
 benchmark_bar = lambda b: _layout(
     go.Figure(go.Bar(x=b.rmse_m, y=b.model, orientation="h",
-                     marker_color=[C["violet"]] + ["#64748B"] * (len(b) - 1),
+                     marker_color=[C["violet"]] + ["#334155"] * (len(b) - 1),
                      text=[f"{v:.3f} m" for v in b.rmse_m], textposition="auto",
-                     textfont=dict(color="#FFFFFF", size=11))),
-    "Model benchmark — lower is better").update_xaxes(title_text="Test RMSE (m)")
+                     textfont=dict(color="#E2E8F0", size=11))),
+    "Model benchmark — lower is better", height=280).update_xaxes(title_text="Test RMSE (m)")
 
 
 def risk_gauge(score: float, band_colour: str) -> go.Figure:
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta", value=score,
-        number=dict(font=dict(size=40, color="#0F172A"), suffix=""),
-        delta=dict(reference=50, valueformat=".1f", font=dict(size=12, color="#475569")),
+        number=dict(font=dict(size=40, color="#E2E8F0"), suffix=""),
+        delta=dict(reference=50, valueformat=".1f", font=dict(size=12)),
         gauge=dict(axis=dict(range=[0, 100], tickwidth=1, tickcolor="#94A3B8",
                              tickfont=dict(size=9, color="#94A3B8")),
                    bar=dict(color=band_colour, thickness=0.72),
                    bgcolor="rgba(0,0,0,0)", borderwidth=0,
-                   steps=[dict(range=[0, 25], color="rgba(22,163,74,.18)"),
-                          dict(range=[25, 45], color="rgba(132,204,22,.18)"),
-                          dict(range=[45, 62], color="rgba(245,158,11,.20)"),
-                          dict(range=[62, 78], color="rgba(249,115,22,.20)"),
-                          dict(range=[78, 100], color="rgba(220,38,38,.18)")])))
-    return _layout(fig, legend_top=False).update_layout(
-        margin=dict(l=40, r=20, t=50, b=40))
+                   steps=[dict(range=[0, 25], color="rgba(34,197,94,.16)"),
+                          dict(range=[25, 45], color="rgba(132,204,22,.16)"),
+                          dict(range=[45, 62], color="rgba(245,158,11,.16)"),
+                          dict(range=[62, 78], color="rgba(249,115,22,.16)"),
+                          dict(range=[78, 100], color="rgba(239,68,68,.16)")])))
+    return _layout(fig, height=230).update_layout(margin=dict(l=24, r=24, t=24, b=12))
 
 
 def risk_components(components: dict, weights: dict) -> go.Figure:
@@ -281,6 +265,6 @@ def risk_components(components: dict, weights: dict) -> go.Figure:
         y=[components[k] * abs(weights.get(k, 0)) for k in keys],
         marker_color=[C["danger"] if weights.get(k, 0) > 0 else C["accent"] for k in keys],
         text=[f"{components[k]:.0f}" for k in keys], textposition="auto",
-        textfont=dict(color="#FFFFFF", size=10)))
+        textfont=dict(color="#E2E8F0", size=10)))
     fig.update_yaxes(title_text="Weighted contribution to the 1–100 score")
-    return _layout(fig, "Risk score decomposition")
+    return _layout(fig, "Risk score decomposition", height=300)

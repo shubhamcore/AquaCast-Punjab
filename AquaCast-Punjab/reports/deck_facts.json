@@ -1,0 +1,292 @@
+{
+  "days": 1828,
+  "start": "2021-10-01",
+  "end": "2026-10-02",
+  "rain_gauges": 3,
+  "temp_stations": 5,
+  "gw_readings": 31,
+  "rain_measured": 1540,
+  "rain_modelled": 288,
+  "temp_measured": 1070,
+  "temp_modelled": 758,
+  "rain_pct": 84.2,
+  "temp_pct": 58.5,
+  "n_districts": 3,
+  "n_par": 52547,
+  "train_seqs": 1713,
+  "best_val": 0.0722,
+  "per_district": {
+    "Sangrur": {
+      "rmse": 0.117,
+      "mae": 0.092,
+      "bias": 0.045,
+      "r2": 0.935,
+      "trend": 91.7,
+      "persist": 0.359,
+      "seasonal": 0.551,
+      "linear": 0.329,
+      "skill": 67.4,
+      "t30": 0.125,
+      "t60": 0.122,
+      "t90": 0.103
+    },
+    "Ludhiana": {
+      "rmse": 0.099,
+      "mae": 0.079,
+      "bias": 0.032,
+      "r2": 0.939,
+      "trend": 90.6,
+      "persist": 0.341,
+      "seasonal": 0.461,
+      "linear": 0.315,
+      "skill": 70.9,
+      "t30": 0.092,
+      "t60": 0.098,
+      "t90": 0.107
+    },
+    "Moga": {
+      "rmse": 0.114,
+      "mae": 0.089,
+      "bias": 0.045,
+      "r2": 0.942,
+      "trend": 91.6,
+      "persist": 0.358,
+      "seasonal": 0.594,
+      "linear": 0.317,
+      "skill": 68.2,
+      "t30": 0.121,
+      "t60": 0.115,
+      "t90": 0.106
+    }
+  },
+  "rmse_lo": 0.099,
+  "rmse_hi": 0.117,
+  "skill_lo": 67.4,
+  "skill_hi": 70.9,
+  "r2_lo": 0.935,
+  "r2_hi": 0.942,
+  "bakeoff": [
+    {
+      "model": "LSTM (AquaCast \u2014 shipped)",
+      "rmse": 0.1171,
+      "mae": 0.0919,
+      "trend": 91.7,
+      "params": 52547
+    },
+    {
+      "model": "Linear probe",
+      "rmse": 0.1427,
+      "mae": 0.1062,
+      "trend": 93.4,
+      "params": 1443
+    },
+    {
+      "model": "GRU (2-layer)",
+      "rmse": 0.1575,
+      "mae": 0.1257,
+      "trend": 92.8,
+      "params": 39363
+    },
+    {
+      "model": "LSTM (AquaCast)",
+      "rmse": 0.1584,
+      "mae": 0.1352,
+      "trend": 87.7,
+      "params": 52547
+    },
+    {
+      "model": "Persistence (naive)",
+      "rmse": 0.3591,
+      "mae": 0.302,
+      "trend": 4.2,
+      "params": 0
+    }
+  ],
+  "beat_linear_pct": 17.9,
+  "beat_gru_pct": 25.7,
+  "importance": [
+    {
+      "f": "doy_sin",
+      "pct": 46.0
+    },
+    {
+      "f": "doy_cos",
+      "pct": 26.1
+    },
+    {
+      "f": "crop_water_demand_mcm",
+      "pct": 11.6
+    },
+    {
+      "f": "rolling_30d_temp",
+      "pct": 7.6
+    },
+    {
+      "f": "temp_max_c",
+      "pct": 3.9
+    },
+    {
+      "f": "rolling_7d_rainfall",
+      "pct": 3.0
+    },
+    {
+      "f": "gw_level_mbgl",
+      "pct": 1.0
+    },
+    {
+      "f": "rainfall_mm",
+      "pct": 0.9
+    }
+  ],
+  "top_feature": "doy_sin",
+  "top_feature_pct": 46.0,
+  "calendar_pct": 72.1,
+  "advisory": {
+    "Sangrur": {
+      "cur": 36.0,
+      "pred": 35.57,
+      "delta": -0.43,
+      "zone": "OVER-EXPLOITED",
+      "band": "High",
+      "score": 62,
+      "pd": 9.4,
+      "el_cr": 10.8,
+      "exp_cr": 191.0,
+      "quota": 1.7,
+      "gap": 40.2,
+      "h_event": 9.8,
+      "q_m3h": 24.8,
+      "stage": "Tillering / canopy development",
+      "stage_pa": "\u0a15\u0a71\u0a32\u0a40\u0a06\u0a02 \u0a28\u0a3f\u0a15\u0a32\u0a23\u0a3e"
+    },
+    "Ludhiana": {
+      "cur": 32.1,
+      "pred": 31.61,
+      "delta": -0.49,
+      "zone": "CRITICAL",
+      "band": "Moderate",
+      "score": 33,
+      "pd": 3.27,
+      "el_cr": 5.8,
+      "exp_cr": 294.0,
+      "quota": 1.5,
+      "gap": 40.9,
+      "h_event": 9.0,
+      "q_m3h": 27.1,
+      "stage": "Tillering / canopy development",
+      "stage_pa": "\u0a15\u0a71\u0a32\u0a40\u0a06\u0a02 \u0a28\u0a3f\u0a15\u0a32\u0a23\u0a3e"
+    },
+    "Moga": {
+      "cur": 34.7,
+      "pred": 34.28,
+      "delta": -0.43,
+      "zone": "CRITICAL",
+      "band": "Moderate",
+      "score": 37,
+      "pd": 3.91,
+      "el_cr": 2.8,
+      "exp_cr": 121.0,
+      "quota": 1.7,
+      "gap": 40.3,
+      "h_event": 9.5,
+      "q_m3h": 25.5,
+      "stage": "Tillering / canopy development",
+      "stage_pa": "\u0a15\u0a71\u0a32\u0a40\u0a06\u0a02 \u0a28\u0a3f\u0a15\u0a32\u0a23\u0a3e"
+    }
+  },
+  "portfolio": {
+    "exp_cr": 607,
+    "par": 3.2,
+    "el_cr": 19.4,
+    "avoid_cr": 4.3
+  },
+  "sangrur": {
+    "cur": 36.0,
+    "pred": 35.57,
+    "delta": -0.43,
+    "zone": "OVER-EXPLOITED",
+    "band": "High",
+    "score": 62,
+    "pd": 9.4,
+    "el_cr": 10.8,
+    "exp_cr": 191.0,
+    "quota": 1.7,
+    "gap": 40.2,
+    "h_event": 9.8,
+    "q_m3h": 24.8,
+    "stage": "Tillering / canopy development",
+    "stage_pa": "\u0a15\u0a71\u0a32\u0a40\u0a06\u0a02 \u0a28\u0a3f\u0a15\u0a32\u0a23\u0a3e"
+  },
+  "n_wells": 122,
+  "n_blocks": 12,
+  "worst_block": "ANDANA",
+  "worst_block_risk": 51.5,
+  "best_block": "PAKHOWAL",
+  "best_block_risk": 0.0,
+  "blocks": [
+    {
+      "block": "ANDANA",
+      "risk": 51.5,
+      "n": 2
+    },
+    {
+      "block": "MOONAK",
+      "risk": 41.9,
+      "n": 9
+    },
+    {
+      "block": "SUNAM",
+      "risk": 22.7,
+      "n": 9
+    },
+    {
+      "block": "SANGRUR",
+      "risk": 16.5,
+      "n": 16
+    },
+    {
+      "block": "DHURI",
+      "risk": 12.5,
+      "n": 17
+    },
+    {
+      "block": "BARNALA",
+      "risk": 10.8,
+      "n": 3
+    }
+  ],
+  "wells_at_risk": 12,
+  "twin": [
+    {
+      "scenario": "Drip 40% + 15-day paddy shift",
+      "end": 36.37,
+      "saved": 0.14
+    },
+    {
+      "scenario": "Micro-Drip Shift (40%)",
+      "end": 36.39,
+      "saved": 0.12
+    }
+  ],
+  "twin_best": {
+    "scenario": "Drip 40% + 15-day paddy shift",
+    "end": 36.37,
+    "saved": 0.14
+  },
+  "draft_mcm": 2488,
+  "recharge_mcm": 2139,
+  "deficit_mcm": 349,
+  "stage_pct": 116,
+  "years": 5.0,
+  "area_km2": 3603,
+  "decline_m_yr": 0.8,
+  "wheat_ha": 280000,
+  "rmse_before": 0.21,
+  "rmse_after": 0.117,
+  "r2_before": 0.789,
+  "r2_after": 0.935,
+  "skill_before": 38.2,
+  "skill_after": 67.4,
+  "forecast_before": -0.01,
+  "forecast_after": -0.43
+}
